@@ -1,7 +1,6 @@
 import Header from "@/components/identity-journey/Header";
 import CheckInCard from "@/components/identity-journey/CheckInCard";
 import WeekStrip from "@/components/identity-journey/WeekStrip";
-import BookSessionCard from "@/components/identity-journey/BookSessionCard";
 import DoneSection from "@/components/identity-journey/DoneSection";
 
 const Index = () => {
@@ -11,7 +10,6 @@ const Index = () => {
       <div className="flex flex-col gap-4 p-4">
         <CheckInCard />
         <WeekStrip />
-        <BookSessionCard />
       </div>
       <DoneSection />
     </div>
