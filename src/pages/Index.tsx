@@ -1,12 +1,19 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import Header from "@/components/identity-journey/Header";
+import CheckInCard from "@/components/identity-journey/CheckInCard";
+import WeekStrip from "@/components/identity-journey/WeekStrip";
+import BookSessionCard from "@/components/identity-journey/BookSessionCard";
+import DoneSection from "@/components/identity-journey/DoneSection";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background max-w-md mx-auto">
+      <Header />
+      <div className="flex flex-col gap-4 p-4">
+        <CheckInCard />
+        <WeekStrip />
+        <BookSessionCard />
       </div>
+      <DoneSection />
     </div>
   );
 };
