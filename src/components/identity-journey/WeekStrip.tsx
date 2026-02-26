@@ -1,7 +1,10 @@
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const logged = [true, true, true, false, false, false, false]; // mock
 
-const WeekStrip = () => {
+interface WeekStripProps {
+  loggedDays: boolean[];
+}
+
+const WeekStrip = ({ loggedDays }: WeekStripProps) => {
   return (
     <div className="card-base">
       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
@@ -12,7 +15,7 @@ const WeekStrip = () => {
           <div key={d} className="flex flex-col items-center gap-1.5">
             <div
               className={`w-8 h-8 rounded-lg ${
-                logged[i]
+                loggedDays[i]
                   ? "bg-lavender-strong"
                   : "border-2 border-muted bg-transparent"
               }`}
