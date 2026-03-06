@@ -11,32 +11,42 @@ const getDayIndex = () => {
   return day === 0 ? 6 : day - 1;
 };
 
-const STORAGE_KEY = "identity-journey-week";
-
-const getStoredDays = (): boolean[] => {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length === 7) return parsed;
-    }
-  } catch {}
-  return [false, false, false, false, false, false, false];
-};
-
 const Index = () => {
   const [selected, setSelected] = useState<number | null>(null);
   const [showQuote, setShowQuote] = useState(false);
-  const [loggedDays, setLoggedDays] = useState<boolean[]>(getStoredDays);
+  const [loggedDays, setLoggedDays] = useState<boolean[]>([false, false, false, false, false, false, false]);
+  const userId = sessionStorage.getItem('user_id');
 
-  const handleDone = () => {
-    if (selected !== null) {
+  useEffect(() => {
+    if (userId) {
+      fetch(`/api/progress/${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.week_data) {
+            setLoggedDays(data.week_data);
+          }
+        })
+        .catch(err => console.error('Failed to fetch progress:', err));
+    }
+  }, [userId]);
+
+  const handleDone = async () => {
+    if (selected !== null && userId) {
       const todayIdx = getDayIndex();
       const updated = [...loggedDays];
       updated[todayIdx] = true;
       setLoggedDays(updated);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      setShowQuote(true);
+
+      try {
+        await fetch('/api/progress', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: userId, week_data: updated }),
+        });
+        setShowQuote(true);
+      } catch (err) {
+        console.error('Failed to save progress:', err);
+      }
     }
   };
 

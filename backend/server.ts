@@ -1,0 +1,102 @@
+import express from 'express';
+import cors from 'cors';
+import axios from 'axios';
+import { neon } from '@neondatabase/serverless';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 3001;
+
+// Use Neon HTTP API for serverless connection
+const sql = neon(process.env.DATABASE_URL!);
+
+app.use(cors());
+app.use(express.json());
+
+// Auth Handshake Validation
+app.post('/api/auth/handshake', async (req, res) => {
+    const { token } = req.body;
+
+    if (!token) {
+        return res.status(400).json({ error: 'Token is required' });
+    }
+
+    try {
+        // Validate token with Mantracare API
+        const response = await axios.post('https://api.mantracare.com/user/user-info', { token });
+
+        if (response.data && response.data.user_id) {
+            const { user_id } = response.data;
+
+            // Auto-initialize user in the database (Idempotent)
+            await sql`
+        INSERT INTO users (user_id) 
+        VALUES (${user_id}) 
+        ON CONFLICT (user_id) DO NOTHING
+      `;
+
+            await sql`
+        INSERT INTO progress (user_id) 
+        VALUES (${user_id}) 
+        ON CONFLICT (user_id) DO NOTHING
+      `;
+
+            return res.json({ user_id });
+        } else {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+    } catch (error: any) {
+        console.error('Authentication Error:', error.response?.data || error.message);
+        return res.status(401).json({ error: 'Authentication failed' });
+    }
+});
+
+// Get User Progress
+app.get('/api/progress/:user_id', async (req, res) => {
+    const { user_id } = req.params;
+
+    try {
+        const result = await sql`
+      SELECT week_data FROM progress WHERE user_id = ${user_id}
+    `;
+
+        if (result.length > 0) {
+            return res.json({ week_data: result[0].week_data });
+        } else {
+            // Return default data if not found
+            return res.json({ week_data: [false, false, false, false, false, false, false] });
+        }
+    } catch (error) {
+        console.error('Database Error:', error);
+        return res.status(500).json({ error: 'Failed to fetch progress' });
+    }
+});
+
+// Update User Progress
+app.post('/api/progress', async (req, res) => {
+    const { user_id, week_data } = req.body;
+
+    if (!user_id || !week_data) {
+        return res.status(400).json({ error: 'Missing user_id or week_data' });
+    }
+
+    try {
+        await sql`
+      INSERT INTO progress (user_id, week_data, updated_at) 
+      VALUES (${user_id}, ${JSON.stringify(week_data)}, CURRENT_TIMESTAMP)
+      ON CONFLICT (user_id) DO UPDATE SET 
+        week_data = EXCLUDED.week_data,
+        updated_at = EXCLUDED.updated_at
+    `;
+        return res.json({ success: true });
+    } catch (error) {
+        console.error('Database Update Error:', error);
+        return res.status(500).json({ error: 'Failed to save progress' });
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Backend server running on port ${port}`);
+});

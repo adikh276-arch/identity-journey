@@ -5,8 +5,11 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import { AuthProvider } from "./components/identity-journey/AuthProvider";
 
 const queryClient = new QueryClient();
+
+import TokenError from "./pages/TokenError";
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -15,9 +18,15 @@ const App = () => (
       <Sonner />
       <BrowserRouter basename="/identity_journey">
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="/token" element={<TokenError />} />
+          <Route path="/*" element={
+            <AuthProvider>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AuthProvider>
+          } />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
