@@ -16,7 +16,7 @@ WORKDIR /usr/share/nginx/html
 COPY --from=builder /app/dist /usr/share/nginx/html/identity_journey
 
 RUN rm /etc/nginx/conf.d/default.conf
-COPY vite-nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY vite-nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 
