@@ -18,7 +18,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
             if (token) {
                 try {
-                    const response = await fetch('/api/auth/handshake', {
+                    const response = await fetch('/identity_journey/api/auth/handshake', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ token }),

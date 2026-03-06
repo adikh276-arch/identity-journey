@@ -19,7 +19,7 @@ const Index = () => {
 
   useEffect(() => {
     if (userId) {
-      fetch(`/api/progress/${userId}`)
+      fetch(`/identity_journey/api/progress/${userId}`)
         .then(res => res.json())
         .then(data => {
           if (data.week_data) {
@@ -38,7 +38,7 @@ const Index = () => {
       setLoggedDays(updated);
 
       try {
-        await fetch('/api/progress', {
+        await fetch('/identity_journey/api/progress', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user_id: userId, week_data: updated }),

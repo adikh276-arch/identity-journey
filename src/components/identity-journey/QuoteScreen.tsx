@@ -50,7 +50,7 @@ const QuoteScreen = ({ selectedIndex, onClose }: QuoteScreenProps) => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.8 }}
         onClick={onClose}
-        className="mt-10 text-sm text-primary font-medium hover:underline transition-all"
+        className="mt-10 px-8 py-3 bg-primary text-primary-foreground font-semibold rounded-xl shadow-md hover:bg-primary/90 transition-all"
       >
         {t('back_home')}
       </motion.button>
