@@ -13,7 +13,15 @@ const Header = () => {
         </button>
         <h1 className="text-lg font-bold text-foreground">{t('app_title')}</h1>
       </div>
-      <LanguageSelector />
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => window.location.href = '/identity_journey/'}
+          className="text-[11px] font-semibold text-primary/80 hover:text-primary transition-colors"
+        >
+          {t('back_home')}
+        </button>
+        <LanguageSelector />
+      </div>
     </div>
   );
 };
