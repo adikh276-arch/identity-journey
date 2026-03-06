@@ -1,20 +1,5 @@
 import { motion } from "framer-motion";
-
-const quotes = [
-  "Being seen is everything. Hold onto that feeling — it's yours.",
-  "Hiding isn't weakness. Sometimes it's wisdom. Your time will come.",
-  "The most honest thing anyone can say is 'I'm still learning who I am.' You're doing that.",
-  "That freedom? That's what you deserve every single day.",
-  "Still here is more than enough. That took strength.",
-];
-
-const sentences = [
-  "I felt seen for who I am today",
-  "I kept a part of myself hidden today",
-  "I'm still figuring myself out — and that's okay",
-  "I felt free to just be me today",
-  "Today was hard, but I'm still here",
-];
+import { useTranslation } from "react-i18next";
 
 interface QuoteScreenProps {
   selectedIndex: number;
@@ -22,6 +7,24 @@ interface QuoteScreenProps {
 }
 
 const QuoteScreen = ({ selectedIndex, onClose }: QuoteScreenProps) => {
+  const { t } = useTranslation();
+
+  const quotes = [
+    t("quote_0"),
+    t("quote_1"),
+    t("quote_2"),
+    t("quote_3"),
+    t("quote_4"),
+  ];
+
+  const sentences = [
+    t("sentence_0"),
+    t("sentence_1"),
+    t("sentence_2"),
+    t("sentence_3"),
+    t("sentence_4"),
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -49,7 +52,7 @@ const QuoteScreen = ({ selectedIndex, onClose }: QuoteScreenProps) => {
         onClick={onClose}
         className="mt-10 text-sm text-primary font-medium hover:underline transition-all"
       >
-        Back to Home
+        {t('back_home')}
       </motion.button>
     </motion.div>
   );

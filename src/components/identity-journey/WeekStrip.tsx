@@ -1,10 +1,22 @@
-const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+import { useTranslation } from "react-i18next";
 
 interface WeekStripProps {
   loggedDays: boolean[];
 }
 
 const WeekStrip = ({ loggedDays }: WeekStripProps) => {
+  const { t } = useTranslation();
+
+  const days = [
+    t("mon"),
+    t("tue"),
+    t("wed"),
+    t("thu"),
+    t("fri"),
+    t("sat"),
+    t("sun"),
+  ];
+
   return (
     <div className="card-base">
       <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
@@ -12,13 +24,12 @@ const WeekStrip = ({ loggedDays }: WeekStripProps) => {
       </p>
       <div className="flex justify-between">
         {days.map((d, i) => (
-          <div key={d} className="flex flex-col items-center gap-1.5">
+          <div key={i} className="flex flex-col items-center gap-1.5">
             <div
-              className={`w-8 h-8 rounded-lg ${
-                loggedDays[i]
+              className={`w-8 h-8 rounded-lg ${loggedDays[i]
                   ? "bg-lavender-strong"
                   : "border-2 border-muted bg-transparent"
-              }`}
+                }`}
             />
             <span className="text-[11px] text-muted-foreground font-medium">{d}</span>
           </div>
