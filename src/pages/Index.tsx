@@ -14,7 +14,7 @@ const getDayIndex = () => {
 const Index = () => {
   const [selected, setSelected] = useState<number | null>(null);
   const [showQuote, setShowQuote] = useState(false);
-  const [loggedDays, setLoggedDays] = useState<boolean[]>([false, false, false, false, false, false, false]);
+  const [loggedDays, setLoggedDays] = useState<(number | null)[]>([null, null, null, null, null, null, null]);
   const userId = sessionStorage.getItem('user_id');
 
   useEffect(() => {
@@ -23,7 +23,12 @@ const Index = () => {
         .then(res => res.json())
         .then(data => {
           if (data.week_data) {
-            setLoggedDays(data.week_data);
+            const migrated = data.week_data.map((v: any) => {
+              if (v === true) return 0;
+              if (v === false) return null;
+              return v;
+            });
+            setLoggedDays(migrated);
           }
         })
         .catch(err => console.error('Failed to fetch progress:', err));
@@ -34,7 +39,7 @@ const Index = () => {
     if (selected !== null && userId) {
       const todayIdx = getDayIndex();
       const updated = [...loggedDays];
-      updated[todayIdx] = true;
+      updated[todayIdx] = selected;
       setLoggedDays(updated);
 
       try {
