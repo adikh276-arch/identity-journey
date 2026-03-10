@@ -45,10 +45,17 @@ app.post('/api/auth/handshake', async (req, res) => {
         ON CONFLICT (user_id) DO NOTHING
       `;
 
+            // Get current week start (Monday)
+            const now = new Date();
+            const day = now.getDay();
+            const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+            const monday = new Date(now.setDate(diff));
+            const week_start = monday.toISOString().split('T')[0];
+
             await sql`
-        INSERT INTO progress (user_id) 
-        VALUES (${user_id}) 
-        ON CONFLICT (user_id) DO NOTHING
+        INSERT INTO progress (user_id, week_start) 
+        VALUES (${user_id}, ${week_start}) 
+        ON CONFLICT (user_id, week_start) DO NOTHING
       `;
 
             return res.json({ user_id });

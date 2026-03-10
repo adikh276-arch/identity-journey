@@ -9,7 +9,8 @@ const AuthContext = createContext<AuthContextType>({ userId: null, loading: true
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [userId, setUserId] = useState<string | null>(sessionStorage.getItem('user_id'));
-    const [loading, setLoading] = useState(!userId);
+    const hasToken = new URLSearchParams(window.location.search).has('token');
+    const [loading, setLoading] = useState(!userId || hasToken);
 
     useEffect(() => {
         const performHandshake = async () => {
