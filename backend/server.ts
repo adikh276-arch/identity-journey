@@ -62,20 +62,22 @@ app.post('/api/auth/handshake', async (req, res) => {
     }
 });
 
-// Get User Progress
-app.get('/api/progress/:user_id', async (req, res) => {
-    const { user_id } = req.params;
+// Get User Progress for a specific week
+app.get('/api/progress/:user_id/:week_start', async (req, res) => {
+    const { user_id, week_start } = req.params;
+    console.log(`Fetching progress for ${user_id} on week ${week_start}`);
 
     try {
         const result = await sql`
-      SELECT week_data FROM progress WHERE user_id = ${user_id}
+      SELECT week_data FROM progress 
+      WHERE user_id = ${user_id} AND week_start = ${week_start}
     `;
 
         if (result.length > 0) {
             return res.json({ week_data: result[0].week_data });
         } else {
-            // Return default data if not found
-            return res.json({ week_data: [false, false, false, false, false, false, false] });
+            // Return default data if not found for this week
+            return res.json({ week_data: [null, null, null, null, null, null, null] });
         }
     } catch (error) {
         console.error('Database Error:', error);
@@ -85,17 +87,17 @@ app.get('/api/progress/:user_id', async (req, res) => {
 
 // Update User Progress
 app.post('/api/progress', async (req, res) => {
-    const { user_id, week_data } = req.body;
+    const { user_id, week_start, week_data } = req.body;
 
-    if (!user_id || !week_data) {
-        return res.status(400).json({ error: 'Missing user_id or week_data' });
+    if (!user_id || !week_start || !week_data) {
+        return res.status(400).json({ error: 'Missing user_id, week_start or week_data' });
     }
 
     try {
         await sql`
-      INSERT INTO progress (user_id, week_data, updated_at) 
-      VALUES (${user_id}, ${JSON.stringify(week_data)}, CURRENT_TIMESTAMP)
-      ON CONFLICT (user_id) DO UPDATE SET 
+      INSERT INTO progress (user_id, week_start, week_data, updated_at) 
+      VALUES (${user_id}, ${week_start}, ${JSON.stringify(week_data)}, CURRENT_TIMESTAMP)
+      ON CONFLICT (user_id, week_start) DO UPDATE SET 
         week_data = EXCLUDED.week_data,
         updated_at = EXCLUDED.updated_at
     `;
