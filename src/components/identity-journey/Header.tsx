@@ -1,19 +1,12 @@
 import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import LanguageSelector from "./LanguageSelector";
 
 const Header = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const handleBack = () => {
-    if (window.parent !== window) {
-      // Embedded in iframe — notify parent to handle navigation
-      window.parent.postMessage({ action: "goBack" }, "*");
-    } else {
-      navigate(-1);
-    }
+    window.history.back();
   };
 
   return (
